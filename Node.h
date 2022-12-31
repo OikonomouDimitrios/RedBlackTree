@@ -16,14 +16,14 @@ struct node {
     Node right;
     Node parent;
 };
-Node root, nilNode;
+Node root, nullNode;
 
 Node initializeNewNode(int key, Colour colour) {
     Node newRecord = (Node) malloc(sizeof(struct node));
     newRecord->key = key;
     newRecord->colour = colour ? colour : Red;
-    newRecord->left = NULL;
-    newRecord->right = NULL;
+    newRecord->left = nullNode;
+    newRecord->right = nullNode;
     newRecord->parent = NULL;
 }
 
