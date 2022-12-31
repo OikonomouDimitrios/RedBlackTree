@@ -16,7 +16,7 @@ struct node {
     Node right;
     Node parent;
 };
-Node root;
+Node root, nilNode;
 
 Node initializeNewNode(int key, Colour colour) {
     Node newRecord = (Node) malloc(sizeof(struct node));
