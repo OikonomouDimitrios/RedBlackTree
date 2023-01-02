@@ -8,4 +8,7 @@ typedef enum Colour {
     Red,
     Black
 } Colour;
+
+const char *colours[] = {"red", "black"};
+
 #endif //REDBLACKTREE_CONSTANTS_H

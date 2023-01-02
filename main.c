@@ -4,7 +4,7 @@
 
 int main() {
     char c = '*';
-    nullNode = initializeNewNode(0, Black);
+    nullNode = initializeNullNode();
     root = nullNode;
     printf("\nThis program simulates a Red Black Tree\n");
     while (c != 'q') {

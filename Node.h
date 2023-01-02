@@ -24,7 +24,14 @@ Node initializeNewNode(int key, Colour colour) {
     newRecord->colour = colour ? colour : Red;
     newRecord->left = nullNode;
     newRecord->right = nullNode;
-    newRecord->parent = NULL;
+    newRecord->parent = nullNode;
+}
+
+Node initializeNullNode() {
+    Node newRecord = initializeNewNode(0, Black);
+    newRecord->left = newRecord;
+    newRecord->right = newRecord;
+    newRecord->parent = newRecord;
 }
 
 #endif //REDBLACKTREE_NODE_H

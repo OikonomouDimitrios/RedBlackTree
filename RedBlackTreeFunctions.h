@@ -58,8 +58,10 @@ void insertNodeFixup(Node *rootNode, Node z) {
                 leftRotate(rootNode, z);
             }
             z->parent->colour = Black;
-            z->parent->parent->colour = Red;
-            rightRotate(rootNode, z->parent->parent);
+            if (z->parent != nullNode) {
+                z->parent->parent->colour = Red;
+                rightRotate(rootNode, z->parent->parent);
+            }
         } else {
             aux = z->parent->parent->left;
             if (aux->colour == Red) {
@@ -72,8 +74,10 @@ void insertNodeFixup(Node *rootNode, Node z) {
                 rightRotate(rootNode, z);
             }
             z->parent->colour = Black;
-            z->parent->parent->colour = Red;
-            leftRotate(rootNode, z->parent->parent);
+            if (z->parent->parent != nullNode) {
+                z->parent->parent->colour = Red;
+                leftRotate(rootNode, z->parent->parent);
+            }
         }
     }
     (*rootNode)->colour = Black;
@@ -127,11 +131,22 @@ int getInsertValuesFromUser() {
 
 }
 
-void printTree(Node root) {
-    //TODO IMPLEMENT
+void printTree(Node x) {
+    if (x != nullNode) {
+        if (x->left != nullNode) {
+            printTree(x->left);
+        }
+        printf("\n the key is :%d color is %s\n ", x->key, colours[x->colour]);
+        if (x->right != nullNode) {
+            printTree(x->right);
+        }
+    } else if (x == nullNode) {
+        printf("\n There are no nodes to print\n");
+    }
 }
 
 void deleteNode(Node *root) {
+    printf("not implemented!");
     //TODO IMPLEMENT
 }
 
