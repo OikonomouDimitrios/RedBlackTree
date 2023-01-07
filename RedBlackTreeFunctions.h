@@ -8,7 +8,9 @@
 #include <stdbool.h>
 #include "Node.h"
 
-int getInsertValuesFromUser();
+Node findNode(Node rootNode, int key);
+
+int getValueFromUser();
 
 void insertNodeFixup(Node *rootNode, Node z);
 
@@ -20,8 +22,12 @@ bool isLeftChild(Node node);
 
 bool isRightChild(Node node);
 
+Node TreeMinimum(Node pNode);
+
+void RedBlackDeleteFixup(Node *T, Node x);
+
 void insertNode(Node *rootNode) {
-    Node newNode = initializeNewNode(getInsertValuesFromUser(), Red);
+    Node newNode = initializeNewNode(getValueFromUser(), Red);
     Node y = nullNode;
     Node x = *rootNode;
     while (x != nullNode) {
@@ -123,7 +129,7 @@ void leftRotate(Node *rootNode, Node x) {
 
 }
 
-int getInsertValuesFromUser() {
+int getValueFromUser() {
     int x;
     printf("\ngive me a key:");
     scanf("%d", &x);
@@ -145,9 +151,75 @@ void printTree(Node x) {
     }
 }
 
-void deleteNode(Node *root) {
+
+void RedBlackTransplant(Node *rootNode, Node u, Node v) {
+    if (u->parent == nullNode) {
+        (*rootNode) = v;
+    } else if (isLeftChild(u)) {
+        u->parent->left = v;
+    } else {
+        u->parent->right = v;
+    }
+    v->parent = u->parent;
+}
+
+void deleteNode(Node *rootNode) {
+    Node z = findNode(*rootNode, getValueFromUser());
+    if (!z) {
+        printf("No such key exists in RB Tree!\n");
+        return;
+    } else {
+        Node y = z;
+        Colour y_original_Colour = z->colour;
+        Node x;
+        if (z->left == nullNode) {
+            x = z->right;
+            RedBlackTransplant(rootNode, z, z->right);
+        } else if (z->right == nullNode) {
+            x = z->left;
+            RedBlackTransplant(rootNode, z, z->left);
+
+        } else {
+            y = TreeMinimum(z->right);
+            y_original_Colour = y->colour;
+            x = y->right;
+            if (y->parent == z) {
+                x->parent = y;
+            } else {
+                RedBlackTransplant(rootNode, y, y->right);
+                y->right = z->right;
+                y->right->parent = y;
+            }
+            RedBlackTransplant(rootNode, z, y);
+            y->left = z->left;
+            y->left->parent = y;
+            y->colour = z->colour;
+        }
+        if (y_original_Colour == Black) {
+            RedBlackDeleteFixup(rootNode, x);
+        }
+    }
+
     printf("not implemented!");
     //TODO IMPLEMENT
+}
+
+void RedBlackDeleteFixup(Node *T, Node x) {
+
+}
+
+Node TreeMinimum(Node pNode) {
+    while (pNode->left != nullNode) {
+        return TreeMinimum(pNode->left);
+    }
+    return pNode;
+}
+
+Node findNode(Node rootNode, int key) {
+    if (rootNode == NULL) return NULL;
+    if (key == rootNode->key) return rootNode;
+    if (key < rootNode->key) return findNode(rootNode->left, key);
+    else return findNode(rootNode->right, key);
 }
 
 bool isLeftChild(Node node) {
