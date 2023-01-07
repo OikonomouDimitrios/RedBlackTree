@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include "Node.h"
 #include "RedBlackTreeFunctions.h"
 
 int main() {
-    char c = '*';
-    nullNode = initializeNullNode();
-    root = nullNode;
     printf("\nThis program simulates a Red Black Tree\n");
+    char c = '*';
+    initializeBasicNodes();
     while (c != 'q') {
         printf("\n insert(i), print(parent), delete(d), quit(q)\n");
         scanf("\n %c", &c);

@@ -24,7 +24,12 @@ bool isRightChild(Node node);
 
 Node TreeMinimum(Node pNode);
 
-void RedBlackDeleteFixup(Node *T, Node x);
+void deleteFixup(Node *rootNode, Node x);
+
+void initializeBasicNodes() {
+    nullNode = initializeNullNode();
+    root = nullNode;
+}
 
 void insertNode(Node *rootNode) {
     Node newNode = initializeNewNode(getValueFromUser(), Red);
@@ -152,7 +157,7 @@ void printTree(Node x) {
 }
 
 
-void RedBlackTransplant(Node *rootNode, Node u, Node v) {
+void transplant(Node *rootNode, Node u, Node v) {
     if (u->parent == nullNode) {
         (*rootNode) = v;
     } else if (isLeftChild(u)) {
@@ -168,44 +173,87 @@ void deleteNode(Node *rootNode) {
     if (!z) {
         printf("No such key exists in RB Tree!\n");
         return;
-    } else {
-        Node y = z;
-        Colour y_original_Colour = z->colour;
-        Node x;
-        if (z->left == nullNode) {
-            x = z->right;
-            RedBlackTransplant(rootNode, z, z->right);
-        } else if (z->right == nullNode) {
-            x = z->left;
-            RedBlackTransplant(rootNode, z, z->left);
-
-        } else {
-            y = TreeMinimum(z->right);
-            y_original_Colour = y->colour;
-            x = y->right;
-            if (y->parent == z) {
-                x->parent = y;
-            } else {
-                RedBlackTransplant(rootNode, y, y->right);
-                y->right = z->right;
-                y->right->parent = y;
-            }
-            RedBlackTransplant(rootNode, z, y);
-            y->left = z->left;
-            y->left->parent = y;
-            y->colour = z->colour;
-        }
-        if (y_original_Colour == Black) {
-            RedBlackDeleteFixup(rootNode, x);
-        }
     }
-
-    printf("not implemented!");
-    //TODO IMPLEMENT
+    Node y;
+    Colour y_original_Colour = z->colour;
+    Node x;
+    if (z->left == nullNode) {
+        x = z->right;
+        transplant(rootNode, z, z->right);
+    } else if (z->right == nullNode) {
+        x = z->left;
+        transplant(rootNode, z, z->left);
+    } else {
+        y = TreeMinimum(z->right);
+        y_original_Colour = y->colour;
+        x = y->right;
+        if (y->parent == z) {
+            x->parent = y;
+        } else {
+            transplant(rootNode, y, y->right);
+            y->right = z->right;
+            y->right->parent = y;
+        }
+        transplant(rootNode, z, y);
+        y->left = z->left;
+        y->left->parent = y;
+        y->colour = z->colour;
+    }
+    if (y_original_Colour == Black) {
+        deleteFixup(rootNode, x);
+    }
 }
 
-void RedBlackDeleteFixup(Node *T, Node x) {
-
+void deleteFixup(Node *rootNode, Node x) {
+    while (x != *rootNode && x->colour == Black) {
+        if (isLeftChild(x)) {
+            Node w = x->parent->right;
+            if (w->colour == Red) {
+                w->colour = Black;
+                x->parent->colour = Red;
+                leftRotate(rootNode, x->parent);
+                w = x->parent->right;
+            }
+            if (w->left->colour == Black && w->right->colour == Black) {
+                w->colour = Red;
+                x = x->parent;
+            } else if (w->right->colour == Black) {
+                w->left->colour = Black;
+                w->colour = Red;
+                rightRotate(rootNode, w);
+                w = x->parent->right;
+            }
+            w->colour = x->parent->colour;
+            x->parent->colour = Black;
+            w->right->colour = Black;
+            leftRotate(rootNode, x->parent);
+            x = *rootNode;
+        } else {
+            // Same as then clause with "right" and "left" exchanged
+            Node w = x->parent->left;
+            if (w->colour == Red) {
+                w->colour = Black;
+                x->parent->colour = Red;
+                rightRotate(rootNode, x->parent);
+                w = x->parent->left;
+            }
+            if (w->right->colour == Black && w->left->colour == Black) {
+                w->colour = Red;
+                x = x->parent;
+            } else if (w->left->colour == Black) {
+                w->right->colour = Black;
+                w->colour = Red;
+                leftRotate(rootNode, w);
+                w = x->parent->left;
+            }
+            w->colour = x->parent->colour;
+            x->parent->colour = Black;
+            w->left->colour = Black;
+            rightRotate(rootNode, x->parent);
+            x = *rootNode;
+        }
+    }
+    x->colour = Black;
 }
 
 Node TreeMinimum(Node pNode) {
