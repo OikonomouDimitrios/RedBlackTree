@@ -22,17 +22,17 @@ bool isLeftChild(Node node);
 
 bool isRightChild(Node node);
 
-Node TreeMinimum(Node auxNode);
+Node TreeMinimum(Node pNode);
 
 void deleteFixup(Node *rootNode, Node x);
 
+void initializeBasicNodes() {
+    nullNode = initializeNullNode();
+    root = nullNode;
+}
+
 void insertNode(Node *rootNode) {
-    int valueFromUser = getValueFromUser();
-    if (findNode(*rootNode, valueFromUser)) {
-        printf("Node exists! Cannot insert duplicate node");
-        return;
-    };
-    Node newNode = initializeNewNode(valueFromUser, Red);
+    Node newNode = initializeNewNode(getValueFromUser(), Red);
     Node y = nullNode;
     Node x = *rootNode;
     while (x != nullNode) {
