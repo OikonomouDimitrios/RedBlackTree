@@ -32,7 +32,12 @@ void initializeBasicNodes() {
 }
 
 void insertNode(Node *rootNode) {
-    Node newNode = initializeNewNode(getValueFromUser(), Red);
+    int valueFromUser = getValueFromUser();
+    if (findNode(rootNode, valueFromUser)) {
+        printf("value already exists! No duplicates allowed.\n");
+        return;
+    }
+    Node newNode = initializeNewNode(valueFromUser, Red);
     Node y = nullNode;
     Node x = *rootNode;
     while (x != nullNode) {
