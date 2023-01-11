@@ -12,7 +12,7 @@ Node findNode(Node rootNode, int key);
 
 int getValueFromUser();
 
-void insertNodeFixup(Node *rootNode, Node z);
+void insertFixup(Node *rootNode, Node z);
 
 void leftRotate(Node *rootNode, Node x);
 
@@ -22,12 +22,17 @@ bool isLeftChild(Node node);
 
 bool isRightChild(Node node);
 
-Node TreeMinimum(Node pNode);
+Node TreeMinimum(Node auxNode);
 
-void RedBlackDeleteFixup(Node *T, Node x);
+void deleteFixup(Node *rootNode, Node x);
 
 void insertNode(Node *rootNode) {
-    Node newNode = initializeNewNode(getValueFromUser(), Red);
+    int valueFromUser = getValueFromUser();
+    if (findNode(*rootNode, valueFromUser)) {
+        printf("Node exists! Cannot insert duplicate node");
+        return;
+    };
+    Node newNode = initializeNewNode(valueFromUser, Red);
     Node y = nullNode;
     Node x = *rootNode;
     while (x != nullNode) {
@@ -46,10 +51,10 @@ void insertNode(Node *rootNode) {
     } else {
         y->right = newNode;
     }
-    insertNodeFixup(&root, newNode);
+    insertFixup(&root, newNode);
 }
 
-void insertNodeFixup(Node *rootNode, Node z) {
+void insertFixup(Node *rootNode, Node z) {
     Node aux;
     while (z->parent->colour == Red) {
         if (z->parent == z->parent->parent->left) {
@@ -152,7 +157,7 @@ void printTree(Node x) {
 }
 
 
-void RedBlackTransplant(Node *rootNode, Node u, Node v) {
+void transplant(Node *rootNode, Node u, Node v) {
     if (u->parent == nullNode) {
         (*rootNode) = v;
     } else if (isLeftChild(u)) {
@@ -174,10 +179,10 @@ void deleteNode(Node *rootNode) {
         Node x;
         if (z->left == nullNode) {
             x = z->right;
-            RedBlackTransplant(rootNode, z, z->right);
+            transplant(rootNode, z, z->right);
         } else if (z->right == nullNode) {
             x = z->left;
-            RedBlackTransplant(rootNode, z, z->left);
+            transplant(rootNode, z, z->left);
 
         } else {
             y = TreeMinimum(z->right);
@@ -186,17 +191,17 @@ void deleteNode(Node *rootNode) {
             if (y->parent == z) {
                 x->parent = y;
             } else {
-                RedBlackTransplant(rootNode, y, y->right);
+                transplant(rootNode, y, y->right);
                 y->right = z->right;
                 y->right->parent = y;
             }
-            RedBlackTransplant(rootNode, z, y);
+            transplant(rootNode, z, y);
             y->left = z->left;
             y->left->parent = y;
             y->colour = z->colour;
         }
         if (y_original_Colour == Black) {
-            RedBlackDeleteFixup(rootNode, x);
+            deleteFixup(rootNode, x);
         }
     }
 
@@ -204,15 +209,63 @@ void deleteNode(Node *rootNode) {
     //TODO IMPLEMENT
 }
 
-void RedBlackDeleteFixup(Node *T, Node x) {
-
+void deleteFixup(Node *rootNode, Node x) {
+    while (x != *rootNode && x->colour == Black) {
+        if (x == x->parent->left) {
+            Node w = x->parent->right;
+            if (w->colour == Red) {
+                w->colour = Black; // case 1
+                x->parent->colour = Red; // case 1
+                leftRotate(rootNode, w); // case 1
+                w = x->parent->right; // case 1
+            }
+            if (w->left->colour == Black && w->right->colour == Black) {
+                w->colour = Red; // case 2
+                x = x->parent; // case 2
+            } else if (w->right->colour == Black) {
+                w->left->colour = Black; // case 3
+                w->colour = Red; // case 3
+                rightRotate(rootNode, w); // case 3
+                w = x->parent->right; // case 3
+            }
+            w->colour = x->parent->colour; // case 4
+            x->parent->colour = Black; // case 4
+            w->right->colour = Black; // case 4
+            leftRotate(rootNode, x->parent); // case 4
+            x = *rootNode; // case 4
+        } else { // same as then clause with "right" and "left" exchanged
+            Node w = x->parent->left;
+            if (w->colour == Red) {
+                w->colour = Black; // case 1
+                x->parent->colour = Red; // case 1
+                rightRotate(rootNode, x->parent); // case 1
+                w = x->parent->left; // case 1
+            }
+            if (w->right->colour == Black && w->left->colour == Black) {
+                w->colour = Red; // case 2
+                x = x->parent; // case 2
+            } else if (w->left->colour == Black) {
+                w->right->colour = Black; // case 3
+                w->colour = Red; // case 3
+                leftRotate(rootNode, w); // case 3
+                w = x->parent->left; // case 3
+            }
+            w->colour = x->parent->colour; // case 4
+            x->parent->colour = Black; // case 4
+            w->left->colour = Black; // case 4
+            rightRotate(rootNode, x->parent); // case 4
+            x = *rootNode; // case 4
+        }
+    }
+    x->colour = Black;
 }
 
-Node TreeMinimum(Node pNode) {
-    while (pNode->left != nullNode) {
-        return TreeMinimum(pNode->left);
+
+Node TreeMinimum(Node auxNode) {
+    while (auxNode->left != nullNode) {
+        return TreeMinimum(auxNode->left);
     }
-    return pNode;
+    return auxNode;
 }
 
 Node findNode(Node rootNode, int key) {
