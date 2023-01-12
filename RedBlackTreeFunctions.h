@@ -22,7 +22,7 @@ bool isLeftChild(Node node);
 
 bool isRightChild(Node node);
 
-Node TreeMinimum(Node pNode);
+Node TreeMinimum(Node auxNode);
 
 void deleteFixup(Node *rootNode, Node x);
 
@@ -33,7 +33,7 @@ void initializeBasicNodes() {
 
 void insertNode(Node *rootNode) {
     int valueFromUser = getValueFromUser();
-    if (findNode(rootNode, valueFromUser)) {
+    if (findNode(*rootNode, valueFromUser)) {
         printf("value already exists! No duplicates allowed.\n");
         return;
     }
@@ -274,7 +274,7 @@ Node TreeMinimum(Node auxNode) {
 }
 
 Node findNode(Node rootNode, int key) {
-    if (rootNode == NULL) return NULL;
+    if (rootNode == nullNode) return NULL;
     if (key == rootNode->key) return rootNode;
     if (key < rootNode->key) return findNode(rootNode->left, key);
     else return findNode(rootNode->right, key);
