@@ -274,7 +274,7 @@ Node TreeMinimum(Node auxNode) {
 }
 
 Node findNode(Node rootNode, int key) {
-    if (rootNode == nullNode) return NULL;
+    if (!rootNode || rootNode == nullNode) return NULL;
     if (key == rootNode->key) return rootNode;
     if (key < rootNode->key) return findNode(rootNode->left, key);
     else return findNode(rootNode->right, key);
