@@ -161,13 +161,18 @@ void printTree(Node x) {
             printTree(x->left);
         }
         char isLeftOrRightChild[50];
+        char keyValue[4];
+        sprintf(keyValue, "%d", x->parent->key);
         if (isLeftChild(x)) {
-            strcpy(isLeftOrRightChild, "left child");
-        } else {
-            strcpy(isLeftOrRightChild, "right child");
+            strcpy(isLeftOrRightChild, "left child of ");
+            strcat(isLeftOrRightChild, keyValue);
+        } else if (isRightChild(x)) {
+            strcpy(isLeftOrRightChild, "right child of ");
+            strcat(isLeftOrRightChild, keyValue);
+        } else if (x->parent == nullNode) {
+            strcpy(isLeftOrRightChild, "root");
         }
-        printf("\n the key is :%d color is %s, is %s of %d ", x->key, colours[x->colour], isLeftOrRightChild,
-               x->parent->key);
+        printf("\nkey : %d color : %s is %s ", x->key, colours[x->colour], isLeftOrRightChild);
         if (x->right != nullNode) {
             printTree(x->right);
         }
