@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include "Node.h"
+#include <string.h>
 
 Node findNode(Node rootNode, int key);
 
@@ -74,7 +75,7 @@ void insertFixup(Node *rootNode, Node z) {
                 leftRotate(rootNode, z);
             }
             z->parent->colour = Black;
-            if (z->parent != nullNode) {
+            if (z->parent->parent != nullNode) {
                 z->parent->parent->colour = Red;
                 rightRotate(rootNode, z->parent->parent);
             }
@@ -152,7 +153,14 @@ void printTree(Node x) {
         if (x->left != nullNode) {
             printTree(x->left);
         }
-        printf("\n the key is :%d color is %s\n ", x->key, colours[x->colour]);
+        char isLeftOrRightChild[50];
+        if (isLeftChild(x)) {
+            strcpy(isLeftOrRightChild, "left child");
+        } else {
+            strcpy(isLeftOrRightChild, "right child");
+        }
+        printf("\n the key is :%d color is %s, is %s of %d ", x->key, colours[x->colour], isLeftOrRightChild,
+               x->parent->key);
         if (x->right != nullNode) {
             printTree(x->right);
         }
