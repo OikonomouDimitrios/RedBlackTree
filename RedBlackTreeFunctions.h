@@ -61,39 +61,46 @@ void insertNode(Node *rootNode) {
 }
 
 void insertFixup(Node *rootNode, Node z) {
-    Node aux;
-    while (z->parent->colour == Red) {
+    Node uncle;
+    while (z->parent && z->parent != nullNode && z->parent->colour == Red) {
+        if (!z->parent->parent || z->parent->parent == nullNode) {
+            break;
+        }
         if (z->parent == z->parent->parent->left) {
-            aux = z->parent->parent->right;
-            if (aux->colour == Red) {
+            uncle = z->parent->parent->right;
+            if (uncle->colour == Red) {
                 z->parent->colour = Black;
-                aux->colour = Black;
+                uncle->colour = Black;
                 z->parent->parent->colour = Red;
                 z = z->parent->parent;
-            } else if (z == z->parent->right) {
-                z = z->parent;
-                leftRotate(rootNode, z);
-            }
-            z->parent->colour = Black;
-            if (z->parent->parent != nullNode) {
-                z->parent->parent->colour = Red;
-                rightRotate(rootNode, z->parent->parent);
+            } else {
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    leftRotate(rootNode, z);
+                }
+                z->parent->colour = Black;
+                if (z->parent->parent != nullNode) {
+                    z->parent->parent->colour = Red;
+                    rightRotate(rootNode, z->parent->parent);
+                }
             }
         } else {
-            aux = z->parent->parent->left;
-            if (aux->colour == Red) {
+            uncle = z->parent->parent->left;
+            if (uncle->colour == Red) {
                 z->parent->colour = Black;
-                aux->colour = Black;
+                uncle->colour = Black;
                 z->parent->parent->colour = Red;
                 z = z->parent->parent;
-            } else if (z == z->parent->left) {
-                z = z->parent;
-                rightRotate(rootNode, z);
-            }
-            z->parent->colour = Black;
-            if (z->parent->parent != nullNode) {
-                z->parent->parent->colour = Red;
-                leftRotate(rootNode, z->parent->parent);
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rightRotate(rootNode, z);
+                }
+                z->parent->colour = Black;
+                if (z->parent->parent != nullNode) {
+                    z->parent->parent->colour = Red;
+                    leftRotate(rootNode, z->parent->parent);
+                }
             }
         }
     }
