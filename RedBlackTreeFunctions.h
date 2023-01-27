@@ -200,7 +200,7 @@ void deleteNode(Node *rootNode) {
         return;
     } else {
         Node y = z;
-        Colour y_original_Colour = z->colour;
+        Colour y_original_Colour = y->colour;
         Node x;
         if (z->left == nullNode) {
             x = z->right;
@@ -225,6 +225,7 @@ void deleteNode(Node *rootNode) {
             y->left->parent = y;
             y->colour = z->colour;
         }
+        //delete node here
         if (y_original_Colour == Black) {
             deleteFixup(rootNode, x);
         }
@@ -241,23 +242,26 @@ void deleteFixup(Node *rootNode, Node x) {
             if (w->colour == Red) {
                 w->colour = Black; // case 1
                 x->parent->colour = Red; // case 1
-                leftRotate(rootNode, w); // case 1
+                leftRotate(rootNode, x->parent); // case 1
                 w = x->parent->right; // case 1
             }
             if (w->left->colour == Black && w->right->colour == Black) {
                 w->colour = Red; // case 2
                 x = x->parent; // case 2
-            } else if (w->right->colour == Black) {
-                w->left->colour = Black; // case 3
-                w->colour = Red; // case 3
-                rightRotate(rootNode, w); // case 3
-                w = x->parent->right; // case 3
+            } else {
+                if (w->right->colour == Black) {
+                    w->left->colour = Black; // case 3
+                    w->colour = Red; // case 3
+                    rightRotate(rootNode, w); // case 3
+                    w = x->parent->right; // case 3
+                }
+
+                w->colour = x->parent->colour; // case 4
+                x->parent->colour = Black; // case 4
+                w->right->colour = Black; // case 4
+                leftRotate(rootNode, x->parent); // case 4
+                x = *rootNode; // case 4
             }
-            w->colour = x->parent->colour; // case 4
-            x->parent->colour = Black; // case 4
-            w->right->colour = Black; // case 4
-            leftRotate(rootNode, x->parent); // case 4
-            x = *rootNode; // case 4
         } else { // same as then clause with "right" and "left" exchanged
             Node w = x->parent->left;
             if (w->colour == Red) {
@@ -269,17 +273,20 @@ void deleteFixup(Node *rootNode, Node x) {
             if (w->right->colour == Black && w->left->colour == Black) {
                 w->colour = Red; // case 2
                 x = x->parent; // case 2
-            } else if (w->left->colour == Black) {
-                w->right->colour = Black; // case 3
-                w->colour = Red; // case 3
-                leftRotate(rootNode, w); // case 3
-                w = x->parent->left; // case 3
+            } else {
+                if (w->left->colour == Black) {
+                    w->right->colour = Black; // case 3
+                    w->colour = Red; // case 3
+                    leftRotate(rootNode, w); // case 3
+                    w = x->parent->left; // case 3
+                }
+
+                w->colour = x->parent->colour; // case 4
+                x->parent->colour = Black; // case 4
+                w->left->colour = Black; // case 4
+                rightRotate(rootNode, x->parent); // case 4
+                x = *rootNode; // case 4
             }
-            w->colour = x->parent->colour; // case 4
-            x->parent->colour = Black; // case 4
-            w->left->colour = Black; // case 4
-            rightRotate(rootNode, x->parent); // case 4
-            x = *rootNode; // case 4
         }
     }
     x->colour = Black;
